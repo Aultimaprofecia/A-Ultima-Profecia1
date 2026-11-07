@@ -1,0 +1,1 @@
+draw_sprite(S_Not_pergaminho, 0, x, y);

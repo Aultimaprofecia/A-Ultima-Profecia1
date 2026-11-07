@@ -1,0 +1,12 @@
+draw_self();
+
+if (perto && !coletado)
+{
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+
+    draw_text(x, y - 40, "[E] Coletar");
+
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+}

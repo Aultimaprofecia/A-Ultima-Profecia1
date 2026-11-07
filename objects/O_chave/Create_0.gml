@@ -1,0 +1,1 @@
+coletada = false;
