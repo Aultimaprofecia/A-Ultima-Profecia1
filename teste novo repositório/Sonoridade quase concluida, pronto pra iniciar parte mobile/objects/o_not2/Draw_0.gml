@@ -1,0 +1,1 @@
+draw_sprite(S_Not_madeira, 0, x, y);
