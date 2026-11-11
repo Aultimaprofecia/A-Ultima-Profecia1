@@ -61,10 +61,24 @@ if (variable_global_exists("chave_room") && global.chave_room == room)
 {
     global.chave_coletada = false;
 }
-        if (mx >= bx1 && mx <= bx2 &&
-            my >= by1 && my <= by2)
+      
+// PARAR A MÚSICA DE PERSEGUIÇÃO
+    if (mx >= bx1 && mx <= bx2 && my >= by1 && my <= by2)
+    {
+        var controlador = instance_find(O_audio_controller, 0);
+
+        if (instance_exists(controlador))
         {
-            room_restart();
+            if (controlador.som_perseguicao != -1)
+            {
+                audio_stop_sound(controlador.som_perseguicao);
+                controlador.som_perseguicao = -1;
+            }
+
+            controlador.guardas_perseguindo = 0;
         }
+
+        room_restart();
     }
+}
 }

@@ -21,8 +21,9 @@ if (perto)
 
                 instance_create_layer(x, y, "Instances", O_not);
 
-                instance_destroy();
+               
             }
+			 instance_destroy();
         }
     }
 }

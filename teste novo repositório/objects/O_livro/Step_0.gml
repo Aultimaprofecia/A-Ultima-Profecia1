@@ -53,7 +53,7 @@ if (distancia < 60)
         {
             global.livro_encontrado = true;
             global.livro_coletado = true;
-
+  instance_create_layer(x, y, "Instances", O_not3);
             global.livro_tempo = room_speed * 2;
 
             mensagem = "Livro verdadeiro!";

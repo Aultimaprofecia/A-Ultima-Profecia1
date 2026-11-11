@@ -1,0 +1,1 @@
+draw_sprite(S_Not_chave, 0, x, y);

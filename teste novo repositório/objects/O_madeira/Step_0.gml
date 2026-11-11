@@ -19,6 +19,7 @@ if (instance_exists(jogador))
         {
             array_push(global.madeiras_chaves_coletadas, chave_madeira);
             global.madeiras_coletadas += 1;
+			  instance_create_layer(x, y, "Instances", o_not2);
         }
 
         instance_destroy();

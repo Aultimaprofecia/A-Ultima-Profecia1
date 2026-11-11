@@ -87,3 +87,8 @@ else
         1
     );
 }
+// CONTROLES DE MOVIMENTAÇÃO
+draw_sprite_ext(S_letraW, 0, 180, 620, 1, 1, 0, -1, 1);
+draw_sprite_ext(S_letraA, 0, 100, 740, 1, 1, 0, -1, 1);
+draw_sprite_ext(S_letraD, 0, 260, 740, 1, 1, 0, -1, 1);
+draw_sprite_ext(S_letraS, 0, 180, 860, 1, 1, 0, -1, 1);

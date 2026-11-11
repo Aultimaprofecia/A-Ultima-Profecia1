@@ -1,3 +1,8 @@
+
+
+
+
+
 // ==========================================
 // POSIÇÃO E TAMANHO DO QUADRO
 // ==========================================
@@ -28,7 +33,51 @@ draw_sprite_stretched(
     largura,
     altura
 );
-    // ==========================================
+if (modo_perseguicao)
+{
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+    draw_set_color(c_red);
+
+    draw_text_transformed(
+        cx,
+        cima + 220,
+        "CUIDADO COM OS GUARDAS!",
+        2,
+        2,
+        0
+    );
+draw_set_color(c_black);
+    draw_text_transformed(
+        cx,
+        cima + 360,
+        "Os guardas estao sempre atentos!\n"
+        + "Quando avistarem voce, comecarao a persegui-lo.\n"
+        + "Fuja e tente despista-los antes que consigam alcancar voce!\n"
+        + "Voce possui apenas 3 vidas.\n"
+        + "Quando perder todas elas, voce morrera e precisara\n"
+        + "recomecar a sala.",
+        1.3,
+        1.3,
+        0
+    );
+
+    draw_set_color(make_color_rgb(240, 200, 90));
+
+    draw_text_transformed(
+        direita - 120,
+        baixo - 45,
+        "[ E ] CONTINUAR",
+        1.3,
+        1.3,
+        0
+    );
+}
+else
+{
+    // TODO: coloque aqui todo o seu Draw GUI original,
+    // desde o texto da mensagem 0 até o CONTINUAR.
+	// ==========================================
     // TEXTO
     // ==========================================
 
@@ -94,7 +143,7 @@ draw_sprite_stretched(
         draw_text_transformed(
             cx,
             cima + 350,
-            "Seu primeiro objetivo é encontrar 10 pergaminhos e coletar 15 madeiras espalhados pela Fortaleza de Kojin.\nMas alguns deles podem estar dificeis de encontrar...",
+            "Seu primeiro objetivo é encontrar 10 pergaminhos \n e coletar 15 madeiras espalhados pela Fortaleza de Kojin.\nMas alguns deles podem estar dificeis de encontrar...",
             1.5,
             1.5,
             0
@@ -107,7 +156,7 @@ draw_sprite_stretched(
         draw_text_transformed(
             cx,
             cima + 350,
-            "Aquele brilho indica a localização de um objeto importante.\Aproxime-se dos pergaminhos e das madeiras e pressione E para coletá-los.",
+            "Aquele brilho indica a localização de um objeto importante.\nAproxime-se dos pergaminhos e das madeiras e pressione E para coletá-los.",
             1.5,
             1.5,
             0
@@ -143,6 +192,9 @@ draw_sprite_stretched(
         0
     );
 
+	
+}
+    
 
 
 // ==========================================

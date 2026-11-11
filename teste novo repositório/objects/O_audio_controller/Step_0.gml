@@ -1,8 +1,12 @@
+
+
 // =====================================
 // DEFINIR PLAYLIST
 // =====================================
 
 var novo_grupo = "";
+
+
 var nova_lista = [];
 
 // MENU, CONFIGURACOES E SELECAO
@@ -31,7 +35,7 @@ else if (
 else if (room == RM_Biblioteca)
 {
     novo_grupo = "biblioteca";
-    nova_lista = [Som_kpop];
+    nova_lista = [Som_engracado];
 }
 
 // FINAL DO TUTORIAL
@@ -57,12 +61,57 @@ if (novo_grupo != audio_grupo)
     audio_ultima = -1;
     audio_instancia = -1;
 }
+// =====================================
+// DETECTAR PERSEGUICAO
+// =====================================
 
+guardas_perseguindo = 0;
+
+with (O_guarda_pai)
+{
+    if (estado == 1)
+    {
+        other.guardas_perseguindo += 1;
+    }
+}
+
+// =====================================
+// CONTROLAR MUSICA DE PERSEGUICAO
+// =====================================
+
+if (guardas_perseguindo > 0)
+{
+    // Para a musica normal
+    if (audio_instancia != -1)
+    {
+        audio_stop_sound(audio_instancia);
+        audio_instancia = -1;
+    }
+
+    // Toca a perseguicao
+    if (som_perseguicao == -1 || !audio_is_playing(som_perseguicao))
+    {
+        som_perseguicao = audio_play_sound(
+            Som_perceguicao_contraotempo,
+            10,
+            true
+        );
+    }
+}
+else
+{
+    // Para a musica de perseguicao
+    if (som_perseguicao != -1)
+    {
+        audio_stop_sound(som_perseguicao);
+        som_perseguicao = -1;
+    }
+}
 // =====================================
 // TOCAR MUSICA
 // =====================================
 
-if (audio_grupo != "")
+if (audio_grupo != "" && guardas_perseguindo == 0)
 {
     if (audio_instancia == -1 || !audio_is_playing(audio_instancia))
     {

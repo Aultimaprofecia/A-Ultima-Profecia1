@@ -1,4 +1,7 @@
-
+if (variable_global_exists("jogo_pausado") && global.jogo_pausado)
+{
+    exit;
+}
 var hud_piscar = instance_find(O_vidas, 0);
 
 // Se morreu, para de piscar e interrompe o movimento
@@ -37,26 +40,54 @@ else
 
 var mov_x = keyboard_check(ord("D")) - keyboard_check(ord("A"));
 var mov_y = keyboard_check(ord("S")) - keyboard_check(ord("W"));
+
+
+virtual_key_add(80, 650, 128, 128, ord("A"));
+virtual_key_add(180, 650, 128, 128, ord("D"));
+virtual_key_add(130, 550, 128, 128, ord("W"));
+virtual_key_add(130, 750, 128, 128, ord("S"));
+
+// ==========================================
+// SOM DE PASSOS
+// ==========================================
+
+var andando = (mov_x != 0 || mov_y != 0);
+var tocar_passos = andando && dash_tempo <= 0 && !morto;
+
+if (tocar_passos)
+{
+    if (!audio_is_playing(Som_passos_provisorio))
+    {
+        audio_play_sound(Som_passos_provisorio, 1, true);
+    }
+}
+else
+{
+    audio_stop_sound(Som_passos_provisorio);
+}
 // ==========================================
 // ATIVAR DASH
 // ==========================================
 
 if (dash_tempo <= 0 && dash_cargas > 0)
 {
-    // DASH PARA DIREITA
-    if (keyboard_check_pressed(vk_right))
-    {
-        dash_x = 1;
-        dash_y = 0;
-        dash_tempo = dash_duracao;
-    }
+   // DASH PARA DIREITA
+if (keyboard_check_pressed(vk_right))
+{
+    dash_x = 1;
+    dash_y = 0;
+    dash_tempo = dash_duracao;
 
+    audio_play_sound(Som_dash, 1, false);
+}
+  
     // DASH PARA ESQUERDA
     else if (keyboard_check_pressed(vk_left))
     {
         dash_x = -1;
         dash_y = 0;
         dash_tempo = dash_duracao;
+		 audio_play_sound(Som_dash, 1, false);
     }
 
     // DASH PARA BAIXO
@@ -65,6 +96,7 @@ if (dash_tempo <= 0 && dash_cargas > 0)
         dash_x = 0;
         dash_y = 1;
         dash_tempo = dash_duracao;
+		 audio_play_sound(Som_dash, 1, false);
     }
 
     // DASH PARA CIMA
@@ -73,6 +105,7 @@ if (dash_tempo <= 0 && dash_cargas > 0)
         dash_x = 0;
         dash_y = -1;
         dash_tempo = dash_duracao;
+		 audio_play_sound(Som_dash, 1, false);
     }
 }
 // ==========================================

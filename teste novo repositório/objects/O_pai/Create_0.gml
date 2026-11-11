@@ -154,3 +154,9 @@ morto = false;
 // Guardar o ponto inicial da room
 x_inicial = x;
 y_inicial = y;
+
+som_morte_tocado = false;
+// CONTROLE DOS SONS
+som_passos_id = -1;
+
+// Botão virtual A

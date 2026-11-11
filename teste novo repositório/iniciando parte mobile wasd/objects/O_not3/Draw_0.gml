@@ -1,0 +1,1 @@
+draw_sprite(S_Not_livro, 0, x, y);

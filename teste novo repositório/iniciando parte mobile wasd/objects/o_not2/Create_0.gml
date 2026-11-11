@@ -1,0 +1,1 @@
+tempo = room_speed * 3;

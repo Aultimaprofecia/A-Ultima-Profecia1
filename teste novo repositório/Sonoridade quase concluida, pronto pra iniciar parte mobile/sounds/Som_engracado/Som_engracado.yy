@@ -10,7 +10,7 @@
   "compression":0,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":76.03202,
+  "duration":48695.773,
   "exportDir":"",
   "name":"Som_engracado",
   "parent":{

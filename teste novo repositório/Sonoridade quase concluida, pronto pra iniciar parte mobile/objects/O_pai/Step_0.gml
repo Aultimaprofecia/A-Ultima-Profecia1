@@ -41,6 +41,17 @@ else
 var mov_x = keyboard_check(ord("D")) - keyboard_check(ord("A"));
 var mov_y = keyboard_check(ord("S")) - keyboard_check(ord("W"));
 // ==========================================
+// PEGANDO OS CONTROLES
+// ==========================================
+
+virtual_key_add(20,600,100,100, vk_left);
+
+
+
+
+
+
+// ==========================================
 // SOM DE PASSOS
 // ==========================================
 

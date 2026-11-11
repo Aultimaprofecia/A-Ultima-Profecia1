@@ -15,3 +15,6 @@ audio_ultima = -1;
 
 // Lista de musicas
 audio_lista = [];
+// CONTROLE DA PERSEGUIÇÃO
+guardas_perseguindo = 0;
+som_perseguicao = -1;

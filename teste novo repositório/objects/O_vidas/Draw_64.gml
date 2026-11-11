@@ -85,7 +85,19 @@ var jogador = instance_find(O_pai, 0);
 
 if (instance_exists(jogador) && jogador.morto)
 {
-    var gw = display_get_gui_width();
+       // SOM DE MORTE - TOCA APENAS UMA VEZ
+  if (!variable_instance_exists(jogador, "som_morte_tocado"))
+{
+    jogador.som_morte_tocado = false;
+}
+
+if (!jogador.som_morte_tocado)
+{
+    audio_play_sound(Som_jumpscare, 1, false);
+    jogador.som_morte_tocado = true;
+}
+   
+   var gw = display_get_gui_width();
     var gh = display_get_gui_height();
 
     // Fundo escuro
@@ -119,9 +131,7 @@ if (instance_exists(jogador) && jogador.morto)
     // Restaurar alinhamentos
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
+	
+
 }
-    if (!som_morte_tocado)
-    {
-        audio_play_sound(Som_jumpscare, 1, false);
-        som_morte_tocado = true;
-    }
+  

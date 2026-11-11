@@ -1,7 +1,10 @@
 var distancia = point_distance(x, y, O_pai.x, O_pai.y);
 
 perto = distancia < 40;
-   // VOLTAR
+
+if (perto)
+{
+    // VOLTAR
     if (keyboard_check_pressed(ord("V")))
     {
         var tamanho = array_length(global.historico_rooms);
@@ -15,3 +18,4 @@ perto = distancia < 40;
             room_goto(room_voltar);
         }
     }
+}

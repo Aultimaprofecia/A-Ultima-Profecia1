@@ -1,9 +1,14 @@
-
-
+if (variable_global_exists("jogo_pausado") && global.jogo_pausado)
+{
+    exit;
+}
 // =====================================================
-// GUARDA - SISTEMA COMPLETO
+// GUARDA - MOVIMENTAÇÃO E ANIMAÇÃO
 // =====================================================
 
+// VARIÁVEIS DE MOVIMENTO
+var mov_x = 0;
+var mov_y = 0;
 
 // =====================================================
 // 1. PATRULHA
@@ -13,56 +18,62 @@ if (estado == 0)
 {
     var mov_patrol = vel * direcao;
 
-    // Verifica parede antes de andar
     if (!place_meeting(x + mov_patrol, y, O_parede))
     {
         x += mov_patrol;
+        mov_x = mov_patrol;
     }
     else
     {
-        // Bateu na parede -> vira
         direcao *= -1;
     }
 }
-
 
 // =====================================================
 // 2. DETECÇÃO DO JOGADOR
 // =====================================================
 
-if (estado == 0)
+if (estado == 0 && instance_exists(O_pai))
 {
-    if (instance_exists(O_pai))
+    var distancia = point_distance(x, y, O_pai.x, O_pai.y);
+
+    if (distancia <= distancia_visao)
     {
-        var distancia = point_distance(
-            x,
-            y,
-            O_pai.x,
-            O_pai.y
-        );
+        var dir_jogador = point_direction(x, y, O_pai.x, O_pai.y);
 
-        if (distancia <= distancia_visao)
+        if (abs(angle_difference(direcao * 180, dir_jogador)) <= 45)
         {
-            var direcao_jogador = point_direction(
-                x,
-                y,
-                O_pai.x,
-                O_pai.y
-            );
+            estado = 1;
 
-            // Só detecta quem estiver na frente
-            if (abs(angle_difference(direcao * 180, direcao_jogador)) <= 45)
+            // ==========================================
+            // TUTORIAL DA PRIMEIRA PERSEGUICAO
+            // ==========================================
+
+            if (!variable_global_exists("tutorial_perseguicao_visto"))
             {
-                estado = 1;
+                global.tutorial_perseguicao_visto = false;
+            }
+
+            if (!global.tutorial_perseguicao_visto)
+            {
+                global.tutorial_perseguicao_visto = true;
+
+                var aviso = instance_create_depth(
+                    0, 0, 0, O_tutorial
+                );
+
+                aviso.modo_perseguicao = true;
+            }
+
+            // SOM DE ALERTA
+            if (!som_hey_tocado)
+            {
+                audio_play_sound(Som_hey, 1, false);
+                som_hey_tocado = true;
             }
         }
     }
 }
-
-
-// =====================================================
-// 3. PERSEGUIÇÃO
-// =====================================================
 
 // =====================================================
 // 3. PERSEGUIÇÃO
@@ -71,128 +82,74 @@ if (estado == 0)
 if (estado == 1)
 {
     if (instance_exists(O_pai))
-	       
-
-     var distancia = point_distance(
-    x,
-    y,
-    O_pai.x,
-    O_pai.y
-);
-
-var direcao_jogador = point_direction(
-    x,
-    y,
-    O_pai.x,
-    O_pai.y
-);
-
-var jogador_visivel = false;
-
-if (distancia <= distancia_visao)
-{
-    if (abs(angle_difference(direcao * 180, direcao_jogador)) <= 45)
     {
-        jogador_visivel = true;
-    }
-}
+        var distancia = point_distance(x, y, O_pai.x, O_pai.y);
 
-// Só perde o jogador quando ele estiver
-// realmente longe do alcance do guarda
-if (distancia > distancia_visao)
-{
-    ultimo_x = O_pai.x;
-    ultimo_y = O_pai.y;
+        var dir_jogador = point_direction(x, y, O_pai.x, O_pai.y);
 
-    tempo_procurando = tempo_max_procurando;
-    estado = 2;
-}
-
-        var velocidade_perseguicao = vel * 1.5;
-
-        var mov_x = lengthdir_x(
-            velocidade_perseguicao,
-            direcao_jogador
-        );
-
-        var mov_y = lengthdir_y(
-            velocidade_perseguicao,
-            direcao_jogador
-        );
-
-
-        // =============================================
-        // TENTA IR DIRETO PARA O JOGADOR
-        // =============================================
-
-        if (!place_meeting(x + mov_x, y + mov_y, O_parede))
+        if (distancia > distancia_visao)
         {
-            x += mov_x;
-            y += mov_y;
+            ultimo_x = O_pai.x;
+            ultimo_y = O_pai.y;
+
+            tempo_procurando = tempo_max_procurando;
+            estado = 2;
         }
-
-
-        // =============================================
-        // SE BATEU, TENTA IR PELO HORIZONTAL
-        // =============================================
-
-        else if (!place_meeting(x + mov_x, y, O_parede))
-        {
-            x += mov_x;
-        }
-
-
-        // =============================================
-        // SE NÃO DEU, TENTA IR PELO VERTICAL
-        // =============================================
-
-        else if (!place_meeting(x, y + mov_y, O_parede))
-        {
-            y += mov_y;
-        }
-		
-
-
-        // =============================================
-        // SE AINDA ESTIVER PRESO,
-        // TENTA UM MOVIMENTO LATERAL
-        // =============================================
-
         else
         {
-            var tentativa_lateral = 3;
+            var velocidade_perseguicao = vel * 1.5;
 
-            // Tenta para a direita
-            if (!place_meeting(x + tentativa_lateral, y, O_parede))
+            var mx = lengthdir_x(velocidade_perseguicao, dir_jogador);
+            var my = lengthdir_y(velocidade_perseguicao, dir_jogador);
+
+            if (!place_meeting(x + mx, y + my, O_parede))
             {
-                x += tentativa_lateral;
+                x += mx;
+                y += my;
+
+                mov_x = mx;
+                mov_y = my;
             }
-
-            // Tenta para a esquerda
-            else if (!place_meeting(x - tentativa_lateral, y, O_parede))
+            else if (!place_meeting(x + mx, y, O_parede))
             {
-                x -= tentativa_lateral;
+                x += mx;
+                mov_x = mx;
             }
-
-            // Tenta para baixo
-            else if (!place_meeting(x, y + tentativa_lateral, O_parede))
+            else if (!place_meeting(x, y + my, O_parede))
             {
-                y += tentativa_lateral;
+                y += my;
+                mov_y = my;
             }
-
-            // Tenta para cima
-            else if (!place_meeting(x, y - tentativa_lateral, O_parede))
+            else
             {
-                y -= tentativa_lateral;
+                var tentativa = 3;
+
+                if (!place_meeting(x + tentativa, y, O_parede))
+                {
+                    x += tentativa;
+                    mov_x = tentativa;
+                }
+                else if (!place_meeting(x - tentativa, y, O_parede))
+                {
+                    x -= tentativa;
+                    mov_x = -tentativa;
+                }
+                else if (!place_meeting(x, y + tentativa, O_parede))
+                {
+                    y += tentativa;
+                    mov_y = tentativa;
+                }
+                else if (!place_meeting(x, y - tentativa, O_parede))
+                {
+                    y -= tentativa;
+                    mov_y = -tentativa;
+                }
             }
         }
     }
+}
 
-// =====================================================
-// 4. PROCURANDO O JOGADOR
-// =====================================================
 
-if (estado == 2)
 // =====================================================
 // 4. PROCURANDO O JOGADOR
 // =====================================================
@@ -201,45 +158,303 @@ if (estado == 2)
 {
     tempo_procurando--;
 
-    // Vai até o último local onde viu o jogador
-    var distancia_ultimo_ponto = point_distance(
-        x,
-        y,
-        ultimo_x,
-        ultimo_y
+    var distancia_ultimo = point_distance(
+        x, y,
+        ultimo_x, ultimo_y
     );
 
-    if (distancia_ultimo_ponto > 5)
+    if (distancia_ultimo > 5)
     {
-        var direcao_ultimo_ponto = point_direction(
-            x,
-            y,
-            ultimo_x,
-            ultimo_y
+        var dir_ultimo = point_direction(
+            x, y,
+            ultimo_x, ultimo_y
         );
 
-        var velocidade_procura = vel;
+        var mx = lengthdir_x(vel, dir_ultimo);
+        var my = lengthdir_y(vel, dir_ultimo);
 
-        var mov_x = lengthdir_x(
-            velocidade_procura,
-            direcao_ultimo_ponto
-        );
-
-        var mov_y = lengthdir_y(
-            velocidade_procura,
-            direcao_ultimo_ponto
-        );
-
-        if (!place_meeting(x + mov_x, y + mov_y, O_parede))
+        if (!place_meeting(x + mx, y + my, O_parede))
         {
-            x += mov_x;
-            y += mov_y;
+            x += mx;
+            y += my;
+
+            mov_x = mx;
+            mov_y = my;
+        }
+        else if (!place_meeting(x + mx, y, O_parede))
+        {
+            x += mx;
+            mov_x = mx;
+        }
+        else if (!place_meeting(x, y + my, O_parede))
+        {
+            y += my;
+            mov_y = my;
         }
     }
 
-    // Só volta para a patrulha quando o tempo acabar
+    if (tempo_procurando <= 0)
+    {
+        estado = 0;
+		som_hey_tocado = false;
+    }
+}
+
+// =====================================================
+// 5. ESCOLHER ANIMAÇÃO
+// =====================================================
+
+// MOVIMENTO HORIZONTAL
+if (abs(mov_x) > 0.1 && abs(mov_x) >= abs(mov_y))
+{
+    sprite_index = sprite_lado;
+
+    image_xscale = sign(mov_x);
+
+    image_speed = 1;
+}
+
+// MOVIMENTO PARA BAIXO - FRENTE
+else if (mov_y > 0.1)
+{
+    if (sprite_frente != noone)
+    {
+        sprite_index = sprite_frente;
+        image_xscale = 1;
+        image_speed = 1;
+    }
+}
+
+// MOVIMENTO PARA CIMA - COSTAS
+else if (mov_y < -0.1)
+{
+    sprite_index = sprite_costas;
+
+    image_xscale = 1;
+
+    image_speed = 1;
+}
+
+// PARADO
+else
+{
+    image_speed = 0;
+    image_index = 0;
+}
+
+
+// =====================================================
+// GUARDA - MOVIMENTAÇÃO E ANIMAÇÃO
+// =====================================================
+
+// VARIÁVEIS DE MOVIMENTO
+var mov_x = 0;
+var mov_y = 0;
+
+// =====================================================
+// 1. PATRULHA
+// =====================================================
+
+if (estado == 0)
+{
+    var mov_patrol = vel * direcao;
+
+    if (!place_meeting(x + mov_patrol, y, O_parede))
+    {
+        x += mov_patrol;
+        mov_x = mov_patrol;
+    }
+    else
+    {
+        direcao *= -1;
+    }
+}
+
+// =====================================================
+// 2. DETECÇÃO DO JOGADOR
+// =====================================================
+if (estado == 0 && instance_exists(O_pai))
+{
+    var distancia = point_distance(x, y, O_pai.x, O_pai.y);
+
+    if (distancia <= distancia_visao)
+    {
+        var dir_jogador = point_direction(x, y, O_pai.x, O_pai.y);
+
+        if (abs(angle_difference(direcao * 180, dir_jogador)) <= 45)
+        {
+            estado = 1;
+
+            if (!som_hey_tocado)
+            {
+                audio_play_sound(Som_hey, 1, false);
+                som_hey_tocado = true;
+            }
+        }
+    }
+}
+
+// =====================================================
+// 3. PERSEGUIÇÃO
+// =====================================================
+
+if (estado == 1)
+{
+    if (instance_exists(O_pai))
+    {
+        var distancia = point_distance(x, y, O_pai.x, O_pai.y);
+
+        var dir_jogador = point_direction(x, y, O_pai.x, O_pai.y);
+
+        if (distancia > distancia_visao)
+        {
+            ultimo_x = O_pai.x;
+            ultimo_y = O_pai.y;
+
+            tempo_procurando = tempo_max_procurando;
+            estado = 2;
+        }
+        else
+        {
+            var velocidade_perseguicao = vel * 1.5;
+
+            var mx = lengthdir_x(velocidade_perseguicao, dir_jogador);
+            var my = lengthdir_y(velocidade_perseguicao, dir_jogador);
+
+            if (!place_meeting(x + mx, y + my, O_parede))
+            {
+                x += mx;
+                y += my;
+
+                mov_x = mx;
+                mov_y = my;
+            }
+            else if (!place_meeting(x + mx, y, O_parede))
+            {
+                x += mx;
+                mov_x = mx;
+            }
+            else if (!place_meeting(x, y + my, O_parede))
+            {
+                y += my;
+                mov_y = my;
+            }
+            else
+            {
+                var tentativa = 3;
+
+                if (!place_meeting(x + tentativa, y, O_parede))
+                {
+                    x += tentativa;
+                    mov_x = tentativa;
+                }
+                else if (!place_meeting(x - tentativa, y, O_parede))
+                {
+                    x -= tentativa;
+                    mov_x = -tentativa;
+                }
+                else if (!place_meeting(x, y + tentativa, O_parede))
+                {
+                    y += tentativa;
+                    mov_y = tentativa;
+                }
+                else if (!place_meeting(x, y - tentativa, O_parede))
+                {
+                    y -= tentativa;
+                    mov_y = -tentativa;
+                }
+            }
+        }
+    }
+}
+
+// =====================================================
+// 4. PROCURANDO O JOGADOR
+// =====================================================
+
+if (estado == 2)
+{
+    tempo_procurando--;
+
+    var distancia_ultimo = point_distance(
+        x, y,
+        ultimo_x, ultimo_y
+    );
+
+    if (distancia_ultimo > 5)
+    {
+        var dir_ultimo = point_direction(
+            x, y,
+            ultimo_x, ultimo_y
+        );
+
+        var mx = lengthdir_x(vel, dir_ultimo);
+        var my = lengthdir_y(vel, dir_ultimo);
+
+        if (!place_meeting(x + mx, y + my, O_parede))
+        {
+            x += mx;
+            y += my;
+
+            mov_x = mx;
+            mov_y = my;
+        }
+        else if (!place_meeting(x + mx, y, O_parede))
+        {
+            x += mx;
+            mov_x = mx;
+        }
+        else if (!place_meeting(x, y + my, O_parede))
+        {
+            y += my;
+            mov_y = my;
+        }
+    }
+
     if (tempo_procurando <= 0)
     {
         estado = 0;
     }
+}
+
+// =====================================================
+// 5. ESCOLHER ANIMAÇÃO
+// =====================================================
+
+// MOVIMENTO HORIZONTAL
+if (abs(mov_x) > 0.1 && abs(mov_x) >= abs(mov_y))
+{
+    sprite_index = sprite_lado;
+
+    image_xscale = sign(mov_x);
+
+    image_speed = 1;
+}
+
+// MOVIMENTO PARA BAIXO - FRENTE
+else if (mov_y > 0.1)
+{
+    if (sprite_frente != noone)
+    {
+        sprite_index = sprite_frente;
+        image_xscale = 1;
+        image_speed = 1;
+    }
+}
+
+// MOVIMENTO PARA CIMA - COSTAS
+else if (mov_y < -0.1)
+{
+    sprite_index = sprite_costas;
+
+    image_xscale = 1;
+
+    image_speed = 1;
+}
+
+// PARADO
+else
+{
+    image_speed = 0;
+    image_index = 0;
 }

@@ -10,7 +10,7 @@
   "compression":0,
   "compressionQuality":4,
   "conversionMode":0,
-  "duration":63.103992,
+  "duration":48695.773,
   "exportDir":"",
   "name":"som_ambiente1",
   "parent":{
